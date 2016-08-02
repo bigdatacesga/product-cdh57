@@ -1,0 +1,5 @@
+In this folder should be a copy of the client version of the following files:
+	- hive-site.xml
+	- core-site.xml
+	- hdfs-site.xml
+	- hbase-site.xml

@@ -1,0 +1,19 @@
+NameNode - 8020, 50070
+
+DataNode - 50010, 50020, 50075
+
+NodeManager - 8040, 8042
+
+SecondaryNameNode - 50090
+
+JobHistory - 10020, 19888, 10033
+
+ResourceManager - 8030, 8031, 8032, 8033
+
+Spark (master) - 18080, 7077 	
+
+Spark (history) - 18081
+
+Spark (worker) - 18082, 7078
+
+

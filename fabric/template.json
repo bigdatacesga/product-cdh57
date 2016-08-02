@@ -1,0 +1,213 @@
+{% set comma = joiner(",") %}
+{
+"nodes": {
+    "master0": {
+        "name": "master0", 
+        "clustername": "{{ instancename }}",
+        "docker_image": "docker-registry/centos-cdh57", 
+        "docker_opts": "--privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro",
+        "port": "22",
+        "check_ports": "22,80,443,50010,50020,50075,8020,50070,8040,8042,8030,8031,8032,8033,10020,19888,10033,18080,7077,18081,18082,7078", 
+        "tags": "master",
+        "cpu": "2", 
+        "mem": "2048",
+        "host": "_", 
+        "id": "_", 
+        "status": "_",
+        "custom_node" : "False",
+        "custom_disks": "False",
+        "number_of_disks" : "{{ opts['master0.disks'] }}",
+        "disks": { {% set comma = joiner(",") %}{% for k in range(0, opts['master0.disks']) %}
+            {{ comma() }} "disk{{ k }}": {
+                "name": "disk{{ k }}", 
+                "type": "sata",
+                "origin": "/data/{{ k }}/{{ instancename }}",
+                "destination": "/data/{{ k }}", 
+                "mode": "rw"
+            } {% endfor %}
+        },
+        "networks": {
+            "eth0": {
+                "networkname": "admin", 
+                "device": "eth0", 
+                "bridge": "_",
+                "address": "_", 
+                "gateway": "_", 
+                "netmask": "_"
+            },
+            "eth1": {
+                "networkname": "storage", 
+                "device": "eth1", 
+                "bridge": "_",
+                "address": "_", 
+                "gateway": "_", 
+                "netmask": "_"
+            }
+        },
+        "services": [
+            "hadoop-hdfs-namenode", 
+            "hadoop-yarn-resourcemanager", 
+            "hadoop-mapreduce-historyserver",
+            "spark-master",
+            "spark-history-server"
+        ]
+    },
+    "master1": {
+        "name": "master1", 
+        "clustername": "{{ instancename }}",
+        "docker_image": "docker-registry/centos-cdh57", 
+        "docker_opts": "--privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro",
+        "port": "22", 
+        "check_ports": "22,80,443,50010,50020,50075,50090,8040,8042,18082,7078", 
+        "tags": "master",
+        "cpu": "2", 
+        "mem": "2048",
+        "host": "_", 
+        "id": "_", 
+        "status": "_",
+        "custom_node" : "False",
+        "custom_disks": "False",
+        "number_of_disks" : "{{ opts['master1.disks'] }}",
+		  "disks": { {% set comma = joiner(",") %}{% for k in range(0, opts['master1.disks']) %}
+            {{ comma() }} "disk{{ k }}": {
+                "name": "disk{{ k }}", 
+                "type": "sata",
+                "origin": "/data/{{ k }}/{{ instancename }}",
+                "destination": "/data/{{ k }}", 
+                "mode": "rw"
+            } {% endfor %}
+        },
+        "networks": {
+            "eth0": {
+                "networkname": "admin", 
+                "device": "eth0", 
+                "bridge": "_",
+                "address": "_", 
+                "gateway": "_", 
+                "netmask": "_"
+            },
+            "eth1": {
+                "networkname": "storage", 
+                "device": "eth1", 
+                "bridge": "_",
+                "address": "_", 
+                "gateway": "_", 
+                "netmask": "_"
+            }
+        },
+        "services": [
+            "hadoop-hdfs-secondarynamenode"
+        ]
+    }
+{% for n in range(0, opts['slaves.number']) %}
+    {{ comma() }} "slave{{ n }}": {
+        "name": "slave{{ n }}", 
+        "clustername": "{{ instancename }}",
+        "docker_image": "docker-registry/centos-cdh57", 
+        "docker_opts": "--privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro",
+        "port": "22", 
+        "check_ports": "22,80,443,50010,50020,50075,8040,8042,18082,7078", 
+        "tags": "slave",
+        "cpu": "2", 
+        "mem": "2048",
+        "host": "_", 
+        "id": "_", 
+        "status": "_",
+        "custom_node" : "False",
+        "custom_disks": "False",
+        "number_of_disks" : "{{ opts['slaves.disks'] }}",
+        "disks": { {% set comma = joiner(",") %}{% for k in range(0, opts['slaves.disks']) %}
+            {{ comma() }} "disk{{ k }}": {
+                "name": "disk{{ k }}", 
+                "type": "sata",
+                "origin": "/data/{{ k }}/{{ instancename }}",
+                "destination": "/data/{{ k }}", 
+                "mode": "rw"
+            } {% endfor %}
+        },
+        "networks": {
+            "eth0": {
+                "networkname": "admin", 
+                "device": "eth0", 
+                "bridge": "_",
+                "address": "_", 
+                "gateway": "_", 
+                "netmask": "_"
+            },
+            "eth1": {
+                "networkname": "storage", 
+                "device": "eth1", 
+                "bridge": "_",
+                "address": "_", 
+                "gateway": "_", 
+                "netmask": "_"
+            }
+        },
+        "services": [
+            "hadoop-hdfs-datanode",
+            "hadoop-yarn-nodemanager", 
+            "spark-worker"
+        ]
+    }
+{% endfor %}
+},
+"services": {
+    "hadoop-hdfs-datanode": {
+        "name": "hadoop-hdfs-datanode",
+        "status": "pending",
+        "nodes": [{% set comma = joiner(",") %}{% for n in range(0, opts['slaves.number']) %}{{ comma() }}"slave{{ n }}"{% endfor %}],
+        "hadoop_hdfs_blocksize" : "{{ opts['advanced.hadoop_hdfs_blocksize'] }}"
+    },
+    "hadoop-hdfs-namenode": {
+        "name": "hadoop-hdfs-namenode",
+        "status": "pending",
+        "nodes": ["master0"]
+    },
+    "hadoop-hdfs-secondarynamenode": {
+        "name": "hadoop-hdfs-secondarynamenode",
+        "status": "pending",
+        "nodes": ["master1"]
+    },
+    "hadoop-yarn-nodemanager": {
+		"name": "hadoop-yarn-nodemanager",
+		"status": "pending",
+		"nodes": [{% set comma = joiner(",") %}{% for n in range(0, opts['slaves.number']) %}{{ comma() }}"slave{{ n }}"{% endfor %}],
+		"hadoop_mapreduce_map_memory": "{{ opts['advanced.hadoop_mapreduce_map_memory'] }}",
+		"hadoop_mapreduce_map_heap": "{{ opts['advanced.hadoop_mapreduce_map_heap'] }}",
+		"hadoop_mapreduce_map_cores": "{{ opts['advanced.hadoop_mapreduce_map_cores'] }}",
+		"hadoop_mapreduce_reduce_memory": "{{ opts['advanced.hadoop_mapreduce_reduce_memory'] }}",
+		"hadoop_mapreduce_reduce_heap": "{{ opts['advanced.hadoop_mapreduce_reduce_heap'] }}",
+		"hadoop_mapreduce_reduce_cores": "{{ opts['advanced.hadoop_mapreduce_reduce_cores'] }}",
+		"hadoop_yarn_nodemanager_memory": "{{ opts['advanced.hadoop_yarn_nodemanager_memory'] }}",
+		"hadoop_yarn_containers": "{{ opts['advanced.hadoop_yarn_containers'] }}"
+    },
+    "hadoop-yarn-resourcemanager": {
+        "name": "hadoop-yarn-resourcemanager",
+        "status": "pending",
+        "nodes": ["master0"]
+    },
+    "hadoop-mapreduce-historyserver": {
+        "name": "hadoop-mapreduce-historyserver",
+        "status": "pending",
+        "nodes": ["master0"]
+    },
+    "spark-master": {
+        "name": "spark-master",
+        "status": "pending",
+        "nodes": ["master0"]
+    },
+    "spark-history-server": {
+        "name": "spark-history-server",
+        "status": "pending",
+        "nodes": ["master0"]
+    },
+    "spark-worker": {
+        "name": "spark-worker",
+        "status": "pending",
+        "nodes": [{% set comma = joiner(",") %}{% for n in range(0, opts['slaves.number']) %}{{ comma() }}"slave{{ n }}"{% endfor %}]
+    }
+}
+
+}
+
+

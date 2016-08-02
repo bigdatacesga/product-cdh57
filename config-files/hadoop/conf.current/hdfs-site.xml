@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+
+	<!-- SECONDARY NAMENODE HOSTNAME -->
+	<property> 
+		<name>dfs.secondary.http.address</name>
+		<value>{{hadoop.secondary.hostname}}:50090</value>
+	</property>
+
+	<!-- SÓLO EN EL NAMENODE, SE RECOMIENDA INDICAR DOS DISCOS DISTINTOS, UNO EXTERNO: NFS -->
+	<property>
+		<name>dfs.namenode.name.dir</name>
+		<value>{{hadoop.jbod.namenode}}</value>
+	</property>
+	
+	<!-- EN TODOS LOS DATANODES, INDICAR TODOS LOS DISCOS -->
+	<property>
+		<name>dfs.datanode.data.dir</name>
+		<value>{{hadoop.jbod.datanode}}</value>
+	</property>
+  
+	<property>
+		<name>dfs.permissions.superusergroup</name>
+		<value>hadoop</value>
+	</property>
+	
+	<!-- EN EL NAMENODE PONER LA IP A 0.0.0.0 Y EN EL SECONDARYNAMENODE LA IP REAL -->
+	<property>
+		<name>dfs.namenode.http-address</name>
+		<value>{{hadoop.master.hostname}}:50070</value>
+	</property>
+	
+	<!-- NECESARIO PARA HBASE -->
+	<property>
+		<name>dfs.datanode.max.transfer.threads</name>
+		<value>4096</value>
+	</property>
+	
+	<!-- NECESARIO PARA IMPALA -->
+	<property>
+			<name>dfs.datanode.hdfs-blocks-metadata.enabled</name>
+			<value>true</value>
+	</property>
+
+	<property>
+			<name>dfs.client.file-block-storage-locations.timeout.millis</name>
+			<value>10000</value>
+	</property>
+	
+	<property>
+			<name>dfs.blocksize</name>
+			<value>{{hadoop.hdfs.blocksize}}</value>
+	</property>
+
+</configuration>

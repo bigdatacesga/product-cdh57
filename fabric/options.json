@@ -1,0 +1,40 @@
+{
+	"required": {
+		"slaves.number": 3
+	},
+	"optional": {
+		"slaves.disks": 2,
+		"master0.disks": 2,
+		"master1.disks": 2,
+		"slaves.cpu": 8,
+		"master0.cpu": 8,
+		"master1.cpu": 8,
+		"slaves.mem": 50000,
+		"master0.mem": 50000,
+		"master1.mem": 50000
+	},
+  	"advanced": {
+		"hadoop_hdfs_blocksize": 134217728,
+		"hadoop_mapreduce_map_memory": 7168,
+		"hadoop_mapreduce_map_heap": "-Xmx6452m",
+		"hadoop_mapreduce_map_cores": 1,
+		"hadoop_mapreduce_reduce_memory": 9216,
+		"hadoop_mapreduce_reduce_heap": "-Xmx8295m",
+		"hadoop_mapreduce_reduce_cores": 1,
+		"hadoop_yarn_nodemanager_memory": 51200,
+		"hadoop_yarn_containers": 8
+  	},
+	"descriptions": {
+		"slaves.number": "Number of slave nodes",
+		"slaves.disks": "Number of disks per slave node",
+		"master0.disks": "Number of disks for the master0",
+		"master1.disks": "Number of disks for the master1",
+		"slaves.cpu": "Number of cores per slave node",
+		"master0.cpu": "Number of cores for the master0",
+		"master1.cpu": "Number of cores for the master1",
+		"slaves.mem": "Memory per slave node (MB)",
+		"master0.mem": "Memory for master0 (MB)",
+		"master1.mem": "Memory for master1 (MB)"
+	}
+}
+
